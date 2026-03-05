@@ -13,3 +13,5 @@ Frontend- ReactJS
 Backend- Java (25LTS) +SpringBoot
 DB- MySQL, Mongo
 Architecture- Microservices
+
+CICD:- GCP
