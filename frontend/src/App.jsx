@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 
 export default function LandingPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username] = useState("Arunavo");
+  const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [bannerIndex, setBannerIndex] = useState(0);
 
@@ -20,6 +20,27 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    // Initialize Google Sign-In
+    if (window.google) {
+      window.google.accounts.id.initialize({
+        client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with your actual client ID
+        callback: handleCredentialResponse
+      });
+      window.google.accounts.id.renderButton(
+        document.getElementById('google-signin-button'),
+        { theme: 'outline', size: 'large' }
+      );
+    }
+  }, []);
+
+  const handleCredentialResponse = (response) => {
+    // Decode the JWT token to get user info
+    const decoded = JSON.parse(atob(response.credential.split('.')[1]));
+    setUser(decoded);
+    setIsLoggedIn(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col">
       {/* Navbar */}
@@ -27,19 +48,14 @@ export default function LandingPage() {
         <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800">Job AI Assistant</h1>
 
         {!isLoggedIn ? (
-          <button
-            onClick={() => setIsLoggedIn(true)}
-            className="bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-xl hover:bg-gray-800 transition text-sm sm:text-base"
-          >
-            Login
-          </button>
+          <div id="google-signin-button"></div>
         ) : (
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="flex items-center gap-2 bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base"
             >
-              {username}
+              {user?.name || 'User'}
               <ChevronDown size={16} />
             </button>
 
@@ -54,6 +70,7 @@ export default function LandingPage() {
                 <button
                   onClick={() => {
                     setIsLoggedIn(false);
+                    setUser(null);
                     setDropdownOpen(false);
                   }}
                   className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 text-sm sm:text-base"
