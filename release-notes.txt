@@ -1,0 +1,405 @@
+🧠 Product: Smart Job Scraper + Assisted Apply Tool
+
+Goal:
+
+Find relevant jobs → rank them → let user choose → safely apply
+
+This minimizes bans and errors.
+
+👤 1) User Onboarding (New User)
+Required Profile Data
+
+Collect once and reuse everywhere.
+
+Basic info
+
+Full name
+
+Email
+
+Phone
+
+Location (city/country)
+
+Work authorization
+
+Professional profile
+
+Job titles of interest
+
+Skills (tags)
+
+Years of experience
+
+Preferred industries
+
+Expected salary (optional)
+
+Remote / On-site / Hybrid
+
+Application assets
+
+Resume upload (PDF/DOCX)
+
+Optional cover letter template
+
+Portfolio links (GitHub, etc.)
+
+Optional integrations:
+
+Linked job accounts (manual login storage)
+
+LinkedIn
+
+Indeed
+
+Naukri.com
+
+⚠️ Credentials must be stored encrypted.
+
+🔐 2) Existing User Login
+
+After login, dashboard shows:
+
+Dashboard Actions
+
+Update profile
+
+Upload new resume
+
+Manage connected job sites
+
+View applied jobs history
+
+⭐ Scrape Jobs button
+
+Your idea is correct.
+
+🔎 3) “Scrape” Button → Job Discovery Engine
+
+When pressed:
+
+Backend does:
+
+Build search queries from profile
+
+Fetch jobs from connected sources
+
+Remove duplicates
+
+Filter irrelevant jobs
+
+Compute ATS match score
+
+Rank results
+
+Return top N jobs
+
+⚠️ Important: Use Hybrid Strategy
+
+Not pure scraping:
+
+✔ Public APIs where possible
+✔ RSS feeds
+✔ Company career pages
+✔ Limited browser automation
+
+This reduces ban risk dramatically.
+
+📋 4) Results List (10–20 Jobs)
+
+Good UX choice 👍
+
+Each item should be a card, not just text.
+
+🧾 5) Job Card Content
+
+Your idea is excellent. Let’s refine it.
+
+Each result should display:
+
+🧱 Core info
+
+Job title
+
+Company name
+
+Location
+
+Salary (if available)
+
+Posting age
+
+Job type (remote/on-site)
+
+📊 ATS Match Score (Key Feature)
+
+Example:
+
+Match Score: 87%  ✅ Strong Fit
+Skills matched: Java, Spring Boot, SQL
+Missing skills: Kafka
+Experience match: Yes
+
+Score should consider:
+
+Skill overlap
+
+Experience alignment
+
+Keywords in resume
+
+Location compatibility
+
+Seniority level
+
+📄 Expandable Pane (Your “small pane” idea)
+
+On click:
+
+Full job description preview
+
+Requirements
+
+Responsibilities
+
+Company info
+
+Link to original listing
+
+🏆 6) Sorting by ATS Score
+
+Yes — this is the correct default.
+
+Add optional filters:
+
+Sort by newest
+
+Sort by salary
+
+Sort by company
+
+Remote only toggle
+
+☑️ 7) Selection Controls
+
+Radio button is NOT ideal.
+
+Use:
+
+✔ Checkboxes (multi-select)
+
+User can select multiple jobs simultaneously.
+
+Add:
+
+Select all
+
+Clear selection
+
+🚀 8) Apply Button
+
+When pressed:
+
+Confirmation screen (VERY IMPORTANT)
+
+Show:
+
+You are about to apply to 8 jobs:
+
+• Company A — Backend Developer
+• Company B — Java Engineer
+• Company C — Software Engineer
+...
+
+Buttons:
+
+Confirm
+
+Cancel
+
+Remove individual jobs
+
+🤖 Apply Engine (Safe Mode)
+
+Instead of blind automation:
+
+Semi-Automated Flow
+
+For each job:
+
+Detect application method
+
+Pre-fill data
+
+Attempt auto-apply if supported
+
+Fall back to guided apply
+
+🛡️ BAN AVOIDANCE STRATEGY (CRITICAL)
+
+You asked the right question.
+
+❌ What gets accounts banned
+
+Too many applications too fast
+
+Identical behavior patterns
+
+Headless browser detection
+
+No human interaction signals
+
+Scraping logged-in pages aggressively
+
+✔ Safe Strategy (Recommended)
+1) Human-like rate limiting
+
+Example:
+
+1 application every 60–180 seconds
+
+Random delays
+
+Daily cap (e.g., 20–40)
+
+2) Use official flows whenever possible
+
+Prefer:
+
+✔ “Easy Apply” style features
+✔ Email apply links
+✔ External company portals
+
+Avoid:
+
+❌ Simulating hidden APIs
+❌ Reverse engineering private endpoints
+
+3) Browser-based automation (not pure bots)
+
+Using tools like:
+
+Selenium
+
+Playwright
+
+Run in visible or stealth mode.
+
+4) Require user confirmation for risky actions
+
+Example:
+
+“This job requires manual questionnaire. Open in browser?”
+
+5) Session reuse
+
+Avoid repeated logins:
+
+Store cookies securely
+
+Refresh sessions gradually
+
+6) Daily application limits
+
+Let user configure:
+
+Max applications per day: 25
+Preferred apply time: Evening
+📊 Additional Features That Add Huge Value
+⭐ Application Tracker
+
+Track status:
+
+Applied
+
+Viewed
+
+Interview
+
+Rejected
+
+Offer
+
+🔔 Smart Notifications
+
+Notify when:
+
+New high-match jobs appear
+
+Application status changes
+
+Resume improvement suggestions
+
+🧠 Resume Optimization Insights
+
+Example:
+
+“Adding ‘Microservices’ to your resume may increase matches by 12%.”
+
+🏗️ Final MVP Feature List (Clean Version)
+👤 Account & Profile
+
+User signup/login
+
+Resume upload
+
+Job preferences
+
+Site integrations
+
+🔎 Job Discovery
+
+Scrape/search jobs
+
+Deduplicate results
+
+ATS scoring
+
+Ranked list
+
+📋 Results UI
+
+Job cards
+
+Expandable details
+
+Match score
+
+Multi-select
+
+🚀 Assisted Apply
+
+Confirmation screen
+
+Safe auto-apply
+
+Guided manual fallback
+
+Rate limiting
+
+📊 Tracking
+
+Application history
+
+Status tracking
+
+🏆 This is a VERY strong portfolio project
+
+If implemented well, this looks like:
+
+“AI-powered job search assistant”
+
+Employers LOVE this.
+
+If you want, I can next give you:
+
+✅ System architecture diagram (backend + Android)
+✅ Database schema design
+✅ ATS scoring algorithm approach
+✅ Step-by-step build roadmap
+✅ Tech stack optimized for Java + Android
+✅ Features that make it startup-level
+✅ How to make it look amazing on your resume
+
+Just say what you want next 🚀
