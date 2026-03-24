@@ -35,4 +35,23 @@ class OrchestratorServiceController {
         response.put("version", "v1");
         return response;
     }
+
+    @PostMapping("auth/google")
+    public Map<String, Object> googleAuth(@RequestBody Map<String, String> request) {
+
+        String token = request.get("token");
+
+        // For now mock verification, later we can verify with Google API'
+        Map<String, Object> user = new HashMap<>();
+        user.put("name", "Test User");
+        user.put("email", "testuser@example.com");
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Login successful");
+        response.put("jwt", "mock-jwt-token"); // Replace with actual JWT generation logic
+        response.put("user", user);
+
+        return response;
+
+    }
 }
