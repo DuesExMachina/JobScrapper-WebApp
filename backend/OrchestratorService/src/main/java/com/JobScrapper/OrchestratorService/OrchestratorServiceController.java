@@ -64,22 +64,54 @@ class OrchestratorServiceController {
     @PostMapping("Auth/google")
     public Map<String, Object> googleAuth(@RequestBody Map<String, String> request) {
 
-        String token = request.get("token");
+        Map<String, Object> response = new HashMap<>();
 
-        // Create the token verifier
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                new NetHttpTransport(),
-                JacksonFactory.getDefaultInstance()).setAudience(Collections.singletonList(CLIENT_ID)).build();
+        try {
+            String token = request.get("token");
 
-        // Verify the sent token against the client id of the app
-        GoogleIdToken idToken = verifier.verify(token);
+            // Create the token verifier
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                    new NetHttpTransport(),
+                    JacksonFactory.getDefaultInstance())
+                    .setAudience(Collections.singletonList(CLIENT_ID))
+                    .build();
 
-        if (idToken == null) {
-            throw new RuntimeException("Invalid ID token");
+            // Verify the sent token against the client id of the app
+            GoogleIdToken idToken = verifier.verify(token);
+
+            if (idToken != null) {
+                // get user details from verified token
+                GoogleIdToken.Payload payload = idToken.getPayload();
+
+                String email = payload.getEmail();
+                String name = (String) payload.get("name");
+
+                // ============
+                // Generate JWT
+                // ============
+
+                String jwt = Jwts.builder()
+                        .setSubject(email)
+                        .claim("name", name)
+                        .setIssuedAt(new Date())
+                        .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                        .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
+                        .compact();
+
+                Map<String, Object> user = new HashMap<>();
+                user.put("name", name);
+                user.put("email", email);
+
+                response.put("status", "success");
+                response.put("jwt", jwt);
+                response.put("user", user);
+            } else {
+                response.put("status", "Invalid ID token");
+            }
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", e.getMessage());
         }
-
-        // get user details from verified token
-
         return response;
 
     }
