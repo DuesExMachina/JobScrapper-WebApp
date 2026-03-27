@@ -41,7 +41,7 @@ export default function LandingPage() {
     setIsLoggedIn(true);*/
   const handleCredentialResponse = async (response) => {
       try {
-        const res = await fetch("http://localhost:8080/api/orchestrator/dummyAuth/google", {
+        const res = await fetch("http://localhost:8080/api/orchestrator/Auth/google", {
           method: "POST",
           headers:{
             "Content-Type": "application/json"
