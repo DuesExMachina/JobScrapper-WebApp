@@ -34,11 +34,34 @@ export default function LandingPage() {
     }
   }, []);
 
-  const handleCredentialResponse = (response) => {
+  
     // Decode the JWT token to get user info
-    const decoded = JSON.parse(atob(response.credential.split('.')[1]));
+    /*const decoded = JSON.parse(atob(response.credential.split('.')[1]));
     setUser(decoded);
-    setIsLoggedIn(true);
+    setIsLoggedIn(true);*/
+  const handleCredentialResponse = async (response) => {
+      try {
+        const res = await fetch("http://localhost:8080/api/orchestrator/Auth/google", {
+          method: "POST",
+          headers:{
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ 
+            token: response.credential
+          }),
+          }
+        );
+
+        const data = await res.json();
+
+        //Save jwt token recieved from backend to local storage
+        localStorage.setItem("jwtToken", data.jwt);
+
+        setUser(data.user);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error("Google Sign-In failed", error);
+      }
   };
 
   return (
