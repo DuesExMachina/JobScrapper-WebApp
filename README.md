@@ -9,9 +9,17 @@ This time taking and cumbersome so we automate the manual effort.
 And as added bonus add some AI magic to further refine our resume for each job posting.
 
 #INTENDED TECH TECH-STACK#
-Frontend- ReactJS
-Backend- Java (25LTS) +SpringBoot
+Frontend- ReactJS, TailWind CSS
+Backend- Java (25LTS) + SpringBoot
 DB- MySQL, Mongo
 Architecture- Microservices
 
 CICD:- GCP
+
+Enabling google authentication:-
+1. Create the project on google cloud console
+2. Create a Auth consent page, API & Services -> Consent Page
+3. Create the Credentials, API & Services -> Credentials
+4. Generate the Client ID
+5. Put the ID in applications.yaml and fetch from there using @Value int controller
+6. Use the client Id to verify token sent by front end
