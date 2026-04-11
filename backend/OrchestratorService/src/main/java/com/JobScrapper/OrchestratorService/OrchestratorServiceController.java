@@ -1,15 +1,26 @@
 package com.JobScrapper.OrchestratorService;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/orchestrator/")
@@ -17,10 +28,22 @@ import org.springframework.web.bind.annotation.*;
 class OrchestratorServiceController {
     // Token Id for our app, we will use this to verify the token sent by the
     // frontend
-    private static final String CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"; // We need to generate this later from google cloud
-                                                                     // console
-    private static final String JWT_SECRET = "my-secret-key"; // In prod we will be storing fetching it from vault using
-                                                              // enviroment spec ific secret
+    @Value("${google.oauth.client-id}")
+    private String CLIENT_ID; // We
+                              // need
+                              // to
+                              // generate
+                              // this
+                              // later
+                              // from
+                              // google
+                              // cloud
+    @Value("${google.jwt.secret}")
+    private String JWT_SECRET; // In prod we will be storing fetching it from vault using
+                               // enviroment spec ific secret
+    @Value("${google.oauth.client-secret}")
+    private String CLIENT_SECRET; // We need to generate this later
+                                  // from google cloud console
 
     // Define your REST endpoints here and use orchestratorService to handle the
     // logic
