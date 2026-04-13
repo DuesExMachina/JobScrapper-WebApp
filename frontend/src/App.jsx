@@ -24,7 +24,7 @@ export default function LandingPage() {
     // Initialize Google Sign-In
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with your actual client ID
+        client_id: '423719913622-70jnp18snlqp5tim1df6shq4ddd9ab5p.apps.googleusercontent.com', // Replace with your actual client ID
         callback: handleCredentialResponse
       });
       window.google.accounts.id.renderButton(
