@@ -90,7 +90,7 @@ class OrchestratorServiceController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            String token = request.get("token");
+            String token = request.get("token"); // exctract the token from the request body
 
             // Create the token verifier
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
@@ -109,29 +109,40 @@ class OrchestratorServiceController {
                 String email = payload.getEmail();
                 String name = (String) payload.get("name");
 
-                // ============
-                // Generate JWT
-                // ============
+                // Check in DB if user exists, if not create a new user and then generate JWT
+                // for the user
+                Optional<User> userOpt = userRepository.findByEmail(email);
 
-                String jwt = Jwts.builder()
-                        .setSubject(email)
-                        .claim("name", name)
-                        .setIssuedAt(new Date())
-                        .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-                        .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
-                        .compact();
+                if (userOpt.isPresent()) {
+                    // ============
+                    // Generate JWT
+                    // ============
 
-                Map<String, Object> user = new HashMap<>();
-                user.put("name", name);
-                user.put("email", email);
+                    String jwt = Jwts.builder()
+                            .setSubject(email)
+                            .claim("name", name)
+                            .setIssuedAt(new Date())
+                            .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                            .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
+                            .compact();
 
-                response.put("status", "success");
-                response.put("jwt", jwt);
-                response.put("user", user);
-            } else {
+                    Map<String, Object> user = new HashMap<>();
+                    user.put("name", name);
+                    user.put("email", email);
+
+                    response.put("status", "success");
+                    response.put("jwt", jwt);
+                    response.put("user", user);
+                } else {
+                    response.put("status", "new_user");
+                    response.put("email", email);
+                    response.put("name", name);
+                }
+
+            } else { // idToken received is null
                 response.put("status", "Invalid ID token");
             }
-        } catch (Exception e) {
+        } catch (Exception e) { // token is invalid
             response.put("status", "error");
             response.put("message", e.getMessage());
         }
@@ -140,3 +151,18 @@ class OrchestratorServiceController {
     }
 
 }
+
+/*
+ * Flow:
+ * 1. Front end sends the auth token as part of request body
+ * 2. We extract the token from requestbody
+ * 3. Create the google token verifier
+ * 4. Verify the token against our client id
+ * 5. If token is valid then we extract user details from the token
+ * Check in DB if user exists with the email from the token payload
+ * 6. Generate the jwt token
+ * 7. Put the user details and jwt token in response and send it back to
+ * frontend
+ * 8. Else if token is not valid then put the error message in the response
+ * 9. Send the response back to frontend
+ */
