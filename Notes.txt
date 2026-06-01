@@ -1,0 +1,64 @@
+Generating the fronend:-
+The frontend is ReactJS with Tailwind CSS
+
+Building the frontend:-
+1.  Initialize your repo with NPM to run vite
+2.  npm create vite@latest . -- --template react
+3.  Install dependencies: npm install
+4.  Move your landing_page.jsx back: mv ../temp_landing.jsx landing_page.jsx.
+5.  Replace the content of src/App.jsx with the code from landing_page.jsx 
+    (or import it as the main component).
+6.  npm install -D tailwindcss postcss autoprefixer
+7.  Manually create the tailwind.config.js
+8.  Manually reate postcss.config.js in the frontend
+9.  Update src/index.css
+10. Run: npm install -D @tailwindcss/postcss.
+11. Update postcss.config.js
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+    autoprefixer: {},
+  },
+}
+
+6. Start the dev server: npm run dev
+7. The app will run on http://localhost:5173 by default.
+8. In the API gateway (Orchestrator service) set up the @CrossOrigin
+   to accept requests from http://localhost:5173
+9. Commit:
+    package-lock.json- Locks the vresions of dependencies used by fronent project
+    commit to version control for reproducible results.
+
+
+Note:- In React (and JavaScript in general), class names are primarily used for CSS styling and do not directly affect JavaScript functionality or logic. 
+They are just string attributes applied to elements for targeting styles (e.g., via Tailwind CSS utility classes). Changing class names alters the visual appearance (e.g., responsiveness, colors) but not the underlying behavior, event handlers, or state management in your code. If you meant something else, provide more details.
+
+Make the display strech to screen length:-
+1. removed the conflicting display: flex; place-items: center; from src/index.cssremoved the conflicting display: flex; place-items: center; from src/index.css
+
+Story #2: Enable login using JWT
+We need to enable the login and creation of user session 
+
+Suggested flow will be:
+User clicks Google Login
+        ↓
+Google returns ID Token (JWT)
+        ↓
+Frontend sends token → Backend
+        ↓
+Backend verifies token with Google
+        ↓
+Backend creates user + returns JWT
+        ↓
+Frontend stores JWT (session/localStorage)
+
+/// Flow working with dummy JWT verification logic
+
+Next Steps:-
+1. Replace with your actual client ID from Google Console
+Otherwise verification will always fail.
+2. Verify the flow till success full JWT token generation
+3. Add JWT filter to Intercept all requests
+✔ Extract JWT from header
+✔ Validate it
+✔ Allow/deny access
