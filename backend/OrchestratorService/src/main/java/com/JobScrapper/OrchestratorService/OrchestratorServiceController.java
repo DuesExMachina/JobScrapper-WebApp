@@ -1,11 +1,14 @@
 package com.JobScrapper.OrchestratorService;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.JobScrapper.OrchestratorService.models.User;
+import com.JobScrapper.OrchestratorService.repositories.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -148,6 +153,42 @@ class OrchestratorServiceController {
         }
         return response;
 
+    }
+
+    @PostMapping("/auth/register")
+    public Map<String, Object> registerUser(@RequestBody Map<String, String> request) {
+
+        String email = request.get("email");
+        String name = request.get("name");
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (userRepository.findByEmail(email).isPresent()) {
+            response.put("status", "already_exists");
+            return response;
+        }
+
+        User user = new User();
+        user.setEmail(email);
+        user.setName(name);
+        user.setRole("USER");
+
+        userRepository.save(user);
+
+        SecretKey key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
+        String jwt = Jwts.builder()
+                .subject(email)
+                .claim("name", name)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(key)
+                .compact();
+
+        response.put("status", "registered");
+        response.put("jwt", jwt);
+        response.put("user", user);
+
+        return response;
     }
 
 }

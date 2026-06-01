@@ -54,13 +54,37 @@ export default function LandingPage() {
 
         const data = await res.json();
 
-        //Save jwt token recieved from backend to local storage
-        localStorage.setItem("jwtToken", data.jwt);
+        if(data.status === "success"){
+          //Save jwt token recieved from backend to local storage
+          localStorage.setItem("jwtToken", data.jwt);
+          setUser(data.user);
+          setIsLoggedIn(true);
+        } else if (data.status === "new_user") {
+          const confirmRegister = window.confirm(`User not found.\nDo you want to register as ${data.email}?`);
 
-        setUser(data.user);
-        setIsLoggedIn(true);
+          if (confirmRegister) {
+            const regRes = await fetch("http://localhost:8080/api/orchestrator/auth/register", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: data.email,
+                name: data.name,
+              }),
+            });
+
+            const regData = await regRes.json();
+
+            localStorage.setItem("jwtToken", regData.jwt);
+            setUser(regData.user);
+            setIsLoggedIn(true);
+        }
+        } else {
+          console.error("Authentication failed", data.message);
+        }
       } catch (error) {
-        console.error("Google Sign-In failed", error);
+        console.error("Log in failed", error);
       }
   };
 
