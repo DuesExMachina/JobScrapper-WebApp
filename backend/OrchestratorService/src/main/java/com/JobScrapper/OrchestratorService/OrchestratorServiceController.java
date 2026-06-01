@@ -26,6 +26,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
 
 @RestController
 @RequestMapping("/api/orchestrator/")
@@ -49,6 +51,9 @@ class OrchestratorServiceController {
     @Value("${google.oauth.client-secret}")
     private String CLIENT_SECRET; // We need to generate this later
                                   // from google cloud console
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Define your REST endpoints here and use orchestratorService to handle the
     // logic
@@ -123,17 +128,20 @@ class OrchestratorServiceController {
                     // Generate JWT
                     // ============
 
+                    SecretKey key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
+
                     String jwt = Jwts.builder()
-                            .setSubject(email)
+                            .subject(email)
                             .claim("name", name)
-                            .setIssuedAt(new Date())
-                            .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-                            .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
+                            .issuedAt(new Date())
+                            .expiration(new Date(System.currentTimeMillis() + 86400000))
+                            .signWith(key)
                             .compact();
 
-                    Map<String, Object> user = new HashMap<>();
-                    user.put("name", name);
-                    user.put("email", email);
+                    User user = new User();
+                    user.setEmail(email);
+                    user.setName(name);
+                    user.setRole("USER");
 
                     response.put("status", "success");
                     response.put("jwt", jwt);
@@ -148,6 +156,7 @@ class OrchestratorServiceController {
                 response.put("status", "Invalid ID token");
             }
         } catch (Exception e) { // token is invalid
+            e.printStackTrace();
             response.put("status", "error");
             response.put("message", e.getMessage());
         }
