@@ -57,6 +57,7 @@ export default function LandingPage() {
         if(data.status === "success"){
           //Save jwt token recieved from backend to local storage
           localStorage.setItem("jwtToken", data.jwt);
+          localStorage.setItem("user", JSON.stringify(data.user));
           setUser(data.user);
           setIsLoggedIn(true);
         } else if (data.status === "new_user") {
@@ -77,6 +78,7 @@ export default function LandingPage() {
             const regData = await regRes.json();
 
             localStorage.setItem("jwtToken", regData.jwt);
+            localStorage.setItem("user", JSON.stringify(regData.user));
             setUser(regData.user);
             setIsLoggedIn(true);
         }
@@ -87,6 +89,15 @@ export default function LandingPage() {
         console.error("Log in failed", error);
       }
   };
+
+  useEffect(() => {
+    const jwt = localStorage.getItem("jwtToken");
+    const savedUser = localStorage.getItem("user");
+    if (jwt && savedUser) {
+      setUser(JSON.parse(savedUser));
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col">
