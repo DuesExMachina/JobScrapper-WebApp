@@ -105,40 +105,47 @@ export default function LandingPage() {
       <nav className="w-full max-w-screen-xl mx-auto flex justify-between items-center px-4 sm:px-6 md:px-8 py-4 bg-[#C8A2C8] shadow-md">
         <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800">Job AI Assistant</h1>
 
-        {!isLoggedIn ? (
-          <div id="google-signin-button"></div>
-        ) : (
-          <div className="relative">
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base"
-            >
-              {user?.name || 'User'}
-              <ChevronDown size={16} />
-            </button>
+        <div className="relative">
+          <div
+            id="google-signin-button"
+            style={{ display: isLoggedIn ? "none" : "block" }}
+          ></div>
 
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-32 sm:w-40 bg-white rounded-xl shadow-lg">
-                <button className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 text-sm sm:text-base">
-                  Profile
-                </button>
-                <button className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 text-sm sm:text-base">
-                  Settings
-                </button>
-                <button
-                  onClick={() => {
-                    setIsLoggedIn(false);
-                    setUser(null);
-                    setDropdownOpen(false);
-                  }}
-                  className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 text-sm sm:text-base"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+          {isLoggedIn && (
+            <>
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center gap-2 bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base"
+              >
+                {user?.name || 'User'}
+                <ChevronDown size={16} />
+              </button>
+
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-32 sm:w-40 bg-white rounded-xl shadow-lg">
+                  <button className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 text-sm sm:text-base">
+                    Profile
+                  </button>
+                  <button className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 text-sm sm:text-base">
+                    Settings
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsLoggedIn(false);
+                      setUser(null);
+                      setDropdownOpen(false);
+                      localStorage.removeItem("jwtToken");
+                      localStorage.removeItem("user");
+                    }}
+                    className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 text-sm sm:text-base"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </nav>
 
       {/* Hero Section */}
