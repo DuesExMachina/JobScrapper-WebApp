@@ -8,8 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,9 +29,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import javax.crypto.SecretKey;
 
 @RestController
 @RequestMapping("/api/orchestrator/")
@@ -95,12 +97,19 @@ class OrchestratorServiceController {
     }
 
     @PostMapping("Auth/google")
-    public Map<String, Object> googleAuth(@RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, Object>> googleAuth(@RequestBody Map<String, String> request) {
 
         Map<String, Object> response = new HashMap<>();
 
         try {
             String token = request.get("token"); // exctract the token from the request body
+
+            // Check is token is valid or not
+            if (token == null || token.isBlank()) {
+                response.put("status", "error");
+                response.put("message", "Token is missing");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Bad request = 400
+            }
 
             // Create the token verifier
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
@@ -146,35 +155,48 @@ class OrchestratorServiceController {
                     response.put("status", "success");
                     response.put("jwt", jwt);
                     response.put("user", user);
-                } else {
-                    response.put("status", "new_user");
-                    response.put("email", email);
-                    response.put("name", name);
+                    return ResponseEntity.ok(response);
                 }
+                // else
+                response.put("status", "new_user");
+                response.put("email", email);
+                response.put("name", name);
+                return ResponseEntity.ok(response);
 
-            } else { // idToken received is null
-                response.put("status", "Invalid ID token");
             }
+
+            // else idToken received is null
+            response.put("status", "error");
+            response.put("message", "Invalid ID token");
+            return ResponseEntity.status(400).body(response);
+
         } catch (Exception e) { // token is invalid
             e.printStackTrace();
             response.put("status", "error");
             response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
-        return response;
+        // return response;
 
     }
 
     @PostMapping("/auth/register")
-    public Map<String, Object> registerUser(@RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody Map<String, String> request) {
 
         String email = request.get("email");
         String name = request.get("name");
 
         Map<String, Object> response = new HashMap<>();
 
+        if (email == null || email.isBlank() || name == null || name.isBlank()) {
+            response.put("status", "error");
+            response.put("message", "Email and name are required");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
         if (userRepository.findByEmail(email).isPresent()) {
             response.put("status", "already_exists");
-            return response;
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // Conflict = 409
         }
 
         User user = new User();
@@ -197,7 +219,7 @@ class OrchestratorServiceController {
         response.put("jwt", jwt);
         response.put("user", user);
 
-        return response;
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 }
