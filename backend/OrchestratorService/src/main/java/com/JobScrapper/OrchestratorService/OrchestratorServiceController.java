@@ -222,6 +222,63 @@ class OrchestratorServiceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<Map<String, Object>> refreshToken(@RequestBody Map<String, String> request) {
+        // get the refresh token from the request body
+        Map<String, Object> response = new HashMap<>();
+        String refreshToken = request.get("refreshToken");
+        String email = request.get("email");
+        String name = request.get("name");
+
+        if (refreshToken == null || refreshToken.isBlank() || email == null || email.isBlank()) {
+            response.put("status", "error");
+            response.put("message", "Valid email and refresh token are required");
+            return ResponseEntity.status(400).body(response);
+        }
+
+        // verify it against the refresh token stored in db for the user
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (!userOpt.isPresent()) {
+            response.put("status", "error");
+            response.put("message", "User not found");
+            return ResponseEntity.status(404).body(response); // 404 = Not found
+        }
+        User user = userOpt.get();
+        if (!refreshToken.equals(user.getRefreshToken())
+                || user.getRefreshTokenExpiry().isBefore(LocalDateTime.now())) {
+            response.put("status", "Login expired");
+            response.put("message", "Invalid or expired refresh token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response); // 401 = Unauthorized
+        }
+        // if valid generate a new access token and refresh token and update the refresh
+        SecretKey key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
+        // create a new access token
+        String accessToken = Jwts.builder()
+                .subject(email)
+                .claim("name", name)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(key)
+                .compact();
+
+        // create new refresh token
+        String newRefreshToken = Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000)) // 7 days
+                .signWith(key)
+                .compact();
+        // token in the db for the user
+        user.setRefreshToken(newRefreshToken);
+        userRepository.save(user);
+
+        // send back both access token and refresh token in the response
+        response.put("status", "success");
+        response.put("accessToken", accessToken);
+        response.put("refeshToken", newRefreshToken);
+        return ResponseEntity.ok(response);
+    }
+
 }
 
 /*

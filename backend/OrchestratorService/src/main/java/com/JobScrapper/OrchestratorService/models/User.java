@@ -21,4 +21,7 @@ public class User {
     private String email;
     private String name;
     private String role;
+    private String refreshToken; // store refresh token in db to verify user when they request for new access
+                                 // token using refresh token
+    private LocalDateTime refreshTokenExpiry;
 }
